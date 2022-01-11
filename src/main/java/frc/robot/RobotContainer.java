@@ -24,6 +24,8 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
@@ -60,6 +62,7 @@ public class RobotContainer {
 
 	// A chooser for autonomous commands
 	SendableChooser<Command> m_chooser = new SendableChooser<>();
+
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -120,24 +123,49 @@ public class RobotContainer {
 		final JoystickButton joystickButton8 = new JoystickButton(joystick, 8); // Intake Pull
 		final JoystickButton joystickButton9 = new JoystickButton(joystick, 9); // Grabber Down
 		final JoystickButton joystickButton10 = new JoystickButton(joystick, 10); // Grabber Up
-		
+
 		// Setup intake
-		m_intake.setDefaultCommand(new RunCommand(() -> m_intake.stop()));
-		joystickButton7.whileHeld(() -> m_intake.eject());
-		joystickButton8.whileHeld(() -> m_intake.pull());
+		// m_intake.setDefaultCommand(new RunCommand(() -> m_intake.stop(), m_intake));
+		// joystickButton7.whileHeld(() -> m_intake.eject());
+		// joystickButton8.whileHeld(() -> m_intake.pull());
 
 		// Setup lifter
-		m_lifter.setDefaultCommand(new RunCommand(() -> m_lifter.stop()));
-		joystickButton9.whileHeld(() -> m_lifter.extend());
-		joystickButton10.whileHeld(() -> m_lifter.retract());
+		// m_lifter.setDefaultCommand(new RunCommand(() -> m_lifter.stop(), m_lifter));
+		// joystickButton9.whileHeld(() -> m_lifter.extend());
+		// joystickButton10.whileHeld(() -> m_lifter.retract());
 
-		// Setup Cannon
-		m_cannon.setDefaultCommand(new RunCommand(() -> m_cannon.stop()));
-		joystickButton2.whileHeld(() -> m_cannon.spinUp());
+		// // Setup Cannon
+		// m_cannon.setDefaultCommand(new RunCommand(() -> m_cannon.stop(), m_cannon));
+		// joystickButton2.whenHeld(new RunCommand(() -> m_cannon.spinUp(), m_cannon));
 		
+		// // Setup Conveyor
+		// m_conveyor.setDefaultCommand(new RunCommand(() -> m_conveyor.stop(), m_conveyor));
+		// joystickButton1.whenHeld(new RunCommand(() -> m_conveyor.feed(), m_conveyor));
+		
+		// Setup Cannon
+		// joystickButton2.whenPressed(() -> cannonRunning = true);
+		// joystickButton2.whenReleased(() -> m_cannon.stop());
+		// m_cannon.setDefaultCommand(new RunCommand(() -> m_cannon.setThrottle((joystick.getRawAxis(3) + 1)/2), m_cannon));
+		m_cannon.setDefaultCommand(new RunCommand(() -> {
+			m_cannon.setThrottle(joystickButton2.get()? 1 - (joystick.getRawAxis(3) + 1)/2 : 0);
+		}, m_cannon));
+
 		// Setup Conveyor
-		m_conveyor.setDefaultCommand(new RunCommand(() -> m_conveyor.stop()));
-		joystickButton1.whileHeld(() -> m_conveyor.feed());
+		joystickButton1.whenPressed(() -> m_conveyor.feed());
+		joystickButton1.whenReleased(() -> m_conveyor.stop());
+
+		// Setup Intake
+		joystickButton7.whenPressed(() -> m_intake.eject());
+		joystickButton7.whenReleased(() -> m_intake.stop());
+		joystickButton8.whenPressed(() -> m_intake.pull());
+		joystickButton8.whenReleased(() -> m_intake.stop());
+
+		// Setup Lifter
+		joystickButton10.whenPressed(() -> m_lifter.extend());
+		joystickButton10.whenReleased(() -> m_lifter.stop());
+		joystickButton9.whenPressed(() -> m_lifter.retract());
+		joystickButton9.whenReleased(() -> m_lifter.stop());
+
 		
 
 		// // Bind intake eject
